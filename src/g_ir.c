@@ -187,6 +187,20 @@ g__ir_top(void)
 		}
 		node = node->link;
 	}
+
+	int start, end, temp_size, temp_act;
+	start = 1;
+	end = state.mark[MARK_HIDDEN];
+	while (start < end) {
+		temp_size = state.ir->nodes[start].size;
+		temp_act = state.ir->nodes[start].activation;
+		state.ir->nodes[start] = state.ir->nodes[end];
+		state.ir->nodes[end].size = temp_size;
+		state.ir->nodes[end].activation = temp_act;
+		++start;
+		--end;
+	}
+
 	node = state.root;
 	while (node) {
 		if (NODE_TYPE_OUTPUT == node->type) {
