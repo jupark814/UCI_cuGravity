@@ -121,6 +121,7 @@ g__ir_top(void)
 {
 	struct node *node;
 	int i, n;
+	int start, end, temp_size, temp_act;
 
 	if (!state.mark[MARK_MODULE]) {
 		yyerror("missing .module sepcification");
@@ -188,7 +189,6 @@ g__ir_top(void)
 		node = node->link;
 	}
 
-	int start, end, temp_size, temp_act;
 	start = 1;
 	end = state.mark[MARK_HIDDEN];
 	while (start < end) {
