@@ -17,6 +17,7 @@
 
 #include "g_ir.h"
 
+#define MAX_CUDA	   1
 #define MAX_BATCH   1000
 #define MAX_SIZE 1000000
 
@@ -29,7 +30,8 @@
 #define MARK_INPUT     6
 #define MARK_OUTPUT    7
 #define MARK_HIDDEN    8
-#define MARK_END       9
+#define MARK_CUDA	   9
+#define MARK_END       10
 
 #define NODE_TYPE_INPUT  0
 #define NODE_TYPE_OUTPUT 1
@@ -160,6 +162,9 @@ g__ir_top(void)
 		yyerror("missing .hidden specification");
 		G__DEBUG(G__ERR_SYNTAX);
 		return -1;
+	}
+	if (!state.mark[MARK_CUDA]) {
+		state.ir->cuda = 0;
 	}
 	n = 2 + state.mark[MARK_HIDDEN];
 	state.ir->layers = n;
@@ -405,6 +410,24 @@ g__ir_hidden(long size, long activation)
 	node->link = state.root;
 	state.root = node;
 	state.mark[MARK_HIDDEN] += 1;
+	return 0;
+}
+
+int
+g__ir_cuda(long cuda)
+{
+	if (state.mark[MARK_CUDA]) {
+		yyerror("duplicate .CUDA specification");
+		G__DEBUG(G__ERR_SYNTAX);
+		return -1;
+	}
+	if (MARK_CUDA < cuda) {
+		yyerror("invalid .CUDA specification '%ld'", cuda);
+		G__DEBUG(G__ERR_SYNTAX);
+		return -1;
+	}
+	state.ir->cuda = (int)cuda;
+	state.mark[MARK_CUDA] += 1;
 	return 0;
 }
 

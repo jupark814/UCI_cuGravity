@@ -38,6 +38,7 @@
 ".input"                         { return G__INPUT;                     }
 ".output"                        { return G__OUTPUT;                    }
 ".hidden"                        { return G__HIDDEN;                    }
+".cuda"                          { return G__CUDA;                      }
 "sgd"                            { return G__SGD;                       }
 "float"                          { return G__FLOAT;                     }
 "double"                         { return G__DOUBLE;                    }

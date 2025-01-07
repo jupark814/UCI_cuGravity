@@ -40,6 +40,7 @@
 %token G__INPUT
 %token G__OUTPUT
 %token G__HIDDEN
+%token G__CUDA
 %token G__SGD
 %token G__FLOAT
 %token G__DOUBLE
@@ -86,6 +87,7 @@ _phrase1_
   | _input_ ';'
   | _output_ ';'
   | _hidden_ ';'
+  | _cuda_ ';'
   | ';'
   ;
 
@@ -137,6 +139,10 @@ _output_
 
 _hidden_
   : G__HIDDEN _expr_ _activation_ { if (g__ir_hidden($2, $3)) YYABORT; }
+  ;
+
+_cuda_
+  : G__CUDA _expr_ { if (g__ir_cuda($2)) YYABORT; }
   ;
 
 _activation_
