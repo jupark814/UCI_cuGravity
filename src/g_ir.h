@@ -87,7 +87,7 @@ int g__ir_batch(long batch);
 int g__ir_input(long size);
 int g__ir_output(long size, long activation);
 int g__ir_hidden(long size, long activation);
-int g__ir_batch(long cuda);
+int g__ir_cuda(long cuda);
 void *g__ir_malloc(size_t n);
 char *g__ir_strdup(const char *s_);
 
