@@ -57,9 +57,6 @@ main(int argc, char *argv[])
 		G__DEBUG(0);
 		return -1;
 	}
-	printf("This is a checkpoint.\n");
-	printf("The IR structure has batch: %d", ir->batch);
-	printf("The IR structure has cuda: %d", ir->cuda);
 	ann = g__ann_open(ir);
 	g__ir_destroy();
 	if (!ann || g__emitc(ann, 0)) {
