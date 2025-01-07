@@ -421,7 +421,7 @@ g__ir_cuda(long cuda)
 		G__DEBUG(G__ERR_SYNTAX);
 		return -1;
 	}
-	if (MARK_CUDA < cuda) {
+	if (MAX_CUDA < cuda) {
 		yyerror("invalid .CUDA specification '%ld'", cuda);
 		G__DEBUG(G__ERR_SYNTAX);
 		return -1;
