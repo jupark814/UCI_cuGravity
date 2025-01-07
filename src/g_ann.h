@@ -59,6 +59,7 @@ struct g__ann {
 	int layers;
 	const char *module;
 	const char *prefix;
+	int cuda;
 	struct g__ann_precision {
 		int whole;
 		int fraction;

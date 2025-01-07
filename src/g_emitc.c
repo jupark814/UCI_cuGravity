@@ -899,12 +899,21 @@ g__emitc(const struct g__ann *ann, const char *tmp)
 		G__DEBUG(0);
 		return -1;
 	}
-	g__sprintf(s,
-		   n,
-		   "%s%s%s.c",
-		   g__strlen(tmp) ? tmp : "",
-		   g__strlen(tmp) ? "/" : "",
-		   ann->module);
+	if (!ann->cuda) {
+		g__sprintf(s,
+			n,
+			"%s%s%s.c",
+			g__strlen(tmp) ? tmp : "",
+			g__strlen(tmp) ? "/" : "",
+			ann->module);
+	} else {
+		g__sprintf(s,
+			n,
+			"%s%s%s.cu",
+			g__strlen(tmp) ? tmp : "",
+			g__strlen(tmp) ? "/" : "",
+			ann->module);
+	}
 	file1 = fopen(s, "w");
 	g__sprintf(s,
 		   n,

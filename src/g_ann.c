@@ -507,6 +507,7 @@ g__ann_open(const struct g__ir *ir)
 	ann->layers = ir->layers;
 	ann->module = g__strdup(ir->module);
 	ann->prefix = g__strdup(ir->prefix);
+	ann->cuda = ir->cuda;
 	if (!ann->module || !ann->prefix) {
 		g__ann_close(ann);
 		G__DEBUG(0);
