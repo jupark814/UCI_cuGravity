@@ -17,6 +17,6 @@ lscpu
 echo ""
 
 make clean && make
-./mnist
+./mnist_manual
 
 echo "=== Job Completed ==="
