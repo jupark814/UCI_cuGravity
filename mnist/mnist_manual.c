@@ -71,7 +71,7 @@ argmax(const real_t *a, int n)
 }
 
 static int
-train_and_test(
+train_and_test(void *alloc_mem,
 	       const uint8_t *train_y,
 	       const uint8_t *train_x,
 	       const uint8_t *test_y,
@@ -109,7 +109,7 @@ train_and_test(
 			}
 			y[j * 10 + (*labels++)] = 1.0;
 		}
-		test_train(m, x, y);
+		test_train(alloc_mem, x, y);
 		printf("\r%06d/%06d", i, m);
 		fflush(stdout);
 	}
@@ -126,7 +126,7 @@ train_and_test(
 		for (k=0; k<(28*28); ++k) {
 			x[k] = (*images++) / 255.0;
 		}
-		z = test_activate(m, x);
+		z = test_activate(alloc_mem, x);
 		if (argmax(z, 10) != (int)(*labels++)) {
 			error++;
 		}
@@ -236,8 +236,20 @@ main()
 	int train_y_n, train_x_n, test_y_n, test_x_n;
 	uint8_t *train_y, *train_x, *test_y, *test_x;
 	int i, e;
+    void* alloc_mem;
 
 	/* open ANN */
+
+	alloc_mem = malloc(test_memory_size());
+	if (!alloc_mem) {
+		G__DEBUG(0);
+		return 0;
+	}
+	memset(alloc_mem, 0, sizeof (struct alloc_mem));
+
+    /* populate */
+
+    test_initialize(void *alloc_mem);
 
 	printf("version: %d\n", test_version());
 	printf("size   : %lu\n", UL(test_memory_size()));
@@ -265,7 +277,7 @@ main()
 	for (i=0; i<EPOCHS; ++i) {
 		printf("--- EPOCH %d ---\n", i);
 		if (!e) {
-			if (train_and_test(
+			if (train_and_test(alloc_mem,
 					   train_y,
 					   train_x,
 					   test_y,
@@ -280,6 +292,7 @@ main()
 
 	/* close */
 
+    free(alloc_mem);
 	free(train_y);
 	free(train_x);
 	free(test_y);
