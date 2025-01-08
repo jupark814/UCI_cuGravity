@@ -15,11 +15,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
+#CC    = gcc
+#FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
+#LIBS  = ../src/libgravity.a -ldl -lm
+#DEST  = mnist
+#OBJS  = mnist.o
+
+#all: $(OBJS)
+#	$(CC) -o $(DEST) $(OBJS) $(LIBS)
+
+#%.o: %.c
+#	$(CC) $(FLAGS) -c $<
+#	$(CC) $(FLAGS) -MM $< > $*.d
+
+#clean:
+#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
+
+#-include $(OBJS:.o=.d)
+
+
+
 CC    = gcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
 LIBS  = ../src/libgravity.a -ldl -lm
-DEST  = mnist
-OBJS  = mnist.o
+DEST  = mnist_manual
+OBJS  = mnist_manual.o
 
 all: $(OBJS)
 	$(CC) -o $(DEST) $(OBJS) $(LIBS)
