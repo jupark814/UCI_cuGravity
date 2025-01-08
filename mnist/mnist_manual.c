@@ -249,7 +249,7 @@ main()
 
     /* populate */
 
-    test_initialize(void *alloc_mem);
+    test_initialize(alloc_mem);
 
 	printf("version: %d\n", test_version());
 	printf("size   : %lu\n", UL(test_memory_size()));
