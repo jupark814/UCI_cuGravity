@@ -39,7 +39,7 @@ CC    = gcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm
 DEST  = mnist_manual
-OBJS  = mnist_manual.o ../src/test.o
+OBJS  = mnist_manual.o test.o
 
 all: $(OBJS)
 	$(CC) -o $(DEST) $(OBJS) $(LIBS)
@@ -47,6 +47,9 @@ all: $(OBJS)
 %.o: %.c
 	$(CC) $(FLAGS) -c $<
 	$(CC) $(FLAGS) -MM $< > $*.d
+
+test.o: ../src/test.c ../src/test.h
+	$(CC) $(FLAGS) -c ../src/test.c -o test.o
 
 clean:
 	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
