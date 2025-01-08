@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "../src/gravity.h"
+#include "../src/test.h"
 
 #define BATCH  8
 #define EPOCHS 4
@@ -71,7 +71,7 @@ argmax(const real_t *a, int n)
 }
 
 static int
-train_and_test(g_t g,
+train_and_test(
 	       const uint8_t *train_y,
 	       const uint8_t *train_x,
 	       const uint8_t *test_y,
@@ -109,7 +109,7 @@ train_and_test(g_t g,
 			}
 			y[j * 10 + (*labels++)] = 1.0;
 		}
-		g_train(g, x, y);
+		test_train(m, x, y);
 		printf("\r%06d/%06d", i, m);
 		fflush(stdout);
 	}
@@ -126,7 +126,7 @@ train_and_test(g_t g,
 		for (k=0; k<(28*28); ++k) {
 			x[k] = (*images++) / 255.0;
 		}
-		z = g_activate(g, x);
+		z = test_activate(m, x);
 		if (argmax(z, 10) != (int)(*labels++)) {
 			error++;
 		}
@@ -236,27 +236,12 @@ main()
 	int train_y_n, train_x_n, test_y_n, test_x_n;
 	uint8_t *train_y, *train_x, *test_y, *test_x;
 	int i, e;
-	g_t g;
 
 	/* open ANN */
 
-	g_debug(1);
-	g = g_open(".optimizer sgd 0.1",
-		   ".precision " TOSTRING(REAL_T),
-		   ".costfnc cross_entropy",
-		   ".batch " TOSTRING(BATCH),
-		   ".input 28 * 28",
-		   ".output 10 softmax",
-		   ".hidden 100 relu",
-		   ".hidden 100 relu",
-		   0);
-	if (!g) {
-		fprintf(stderr, "g_open error\n");
-		return -1;
-	}
-	printf("version: %d\n", g_version());
-	printf("size   : %lu\n", UL(g_memory_size(g)));
-	printf("hard   : %lu\n", UL(g_memory_hard(g)));
+	printf("version: %d\n", test_version());
+	printf("size   : %lu\n", UL(test_memory_size()));
+	printf("hard   : %lu\n", UL(test_memory_hard()));
 
 	/* load train/test data */
 
@@ -280,7 +265,7 @@ main()
 	for (i=0; i<EPOCHS; ++i) {
 		printf("--- EPOCH %d ---\n", i);
 		if (!e) {
-			if (train_and_test(g,
+			if (train_and_test(
 					   train_y,
 					   train_x,
 					   test_y,
@@ -295,7 +280,6 @@ main()
 
 	/* close */
 
-	g_close(g);
 	free(train_y);
 	free(train_x);
 	free(test_y);
