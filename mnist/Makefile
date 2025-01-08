@@ -36,10 +36,10 @@
 
 
 CC    = gcc
-FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
+FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm
 DEST  = mnist_manual
-OBJS  = mnist_manual.o test.o
+OBJS  = mnist_manual.o ../src/test.o
 
 all: $(OBJS)
 	$(CC) -o $(DEST) $(OBJS) $(LIBS)
