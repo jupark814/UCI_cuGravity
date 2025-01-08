@@ -242,8 +242,8 @@ main()
 
 	alloc_mem = malloc(test_memory_size());
 	if (!alloc_mem) {
-		G__DEBUG(0);
-		return 0;
+		printf("Error with alloc_mem!");
+		return -1;
 	}
 	memset(alloc_mem, 0, sizeof (struct alloc_mem));
 
