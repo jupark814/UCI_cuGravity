@@ -245,7 +245,7 @@ main()
 		printf("Error with alloc_mem!");
 		return -1;
 	}
-	memset(alloc_mem, 0, sizeof (struct alloc_mem));
+	memset(alloc_mem, 0, test_memory_size());
 
     /* populate */
 
