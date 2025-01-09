@@ -6,6 +6,6 @@
 .batch 8               ;
 .input 28 * 28         ;
 .output 10 softmax     ;
-.hidden 50  relu       ;
 .hidden 100 relu       ;
-.cuda 1                ;
+.hidden 100 relu       ;
+.cuda 0                ;
