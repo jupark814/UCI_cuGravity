@@ -25,6 +25,7 @@ echo -e "\n"
 #module load cudasdk/22.9
 
 make clean && make
-./mnist
+#./mnist
+./mnist_manual
 
 echo "=== Job Completed ==="
