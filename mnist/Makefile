@@ -36,10 +36,11 @@
 
 
 CC    = gcc
-NVCC  = nvcc
+# NVCC  = nvcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
-NVCC_FLAGS = -arch sm_70
-LIBS  = ../src/libgravity.a -ldl -lm -lcudart
+# NVCC_FLAGS = -arch sm_70
+LIBS  = ../src/libgravity.a -ldl -lm
+# LIBS  = ../src/libgravity.a -ldl -lm -lcudart
 DEST  = mnist_manual
 OBJS  = mnist_manual.o test.o
 
@@ -50,8 +51,11 @@ all: $(OBJS)
 	$(CC) $(FLAGS) -c $<
 	$(CC) $(FLAGS) -MM $< > $*.d
 
-test.o: ../src/test.cu ../src/test.h
-	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
+test.o: ../src/test.c ../src/test.h
+	$(CC) $(FLAGS) -c ../src/test.c -o test.o
+
+#test.o: ../src/test.cu ../src/test.h
+#	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
 
 clean:
 	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
