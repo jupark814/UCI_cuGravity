@@ -58,6 +58,6 @@ clean:
 #	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
 
 #clean:
-	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
+#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
 
 #-include $(OBJS:.o=.d)
