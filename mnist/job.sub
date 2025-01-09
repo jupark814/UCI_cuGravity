@@ -16,6 +16,14 @@ echo "=== CPU Information ==="
 lscpu
 echo ""
 
+echo ""
+echo "=== GPU Information ==="
+nvidia-smi
+
+echo -e "\n"
+
+module load cudasdk/22.9
+
 make clean && make
 ./mnist_manual
 
