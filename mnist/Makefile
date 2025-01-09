@@ -38,7 +38,7 @@
 CC    = gcc
 NVCC  = nvcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
-NVCC_FLAGS = -Xcompiler "-Wall -Wextra -Werror -fPIC" -03 -I../src
+NVCC_FLAGS = -arch sm_70
 LIBS  = ../src/libgravity.a -ldl -lm -lcudart
 DEST  = mnist_manual
 OBJS  = mnist_manual.o test.o
