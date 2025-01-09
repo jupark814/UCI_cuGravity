@@ -15,34 +15,11 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-#CC    = gcc
-#FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
-#LIBS  = ../src/libgravity.a -ldl -lm
-#DEST  = mnist
-#OBJS  = mnist.o
-
-#all: $(OBJS)
-#	$(CC) -o $(DEST) $(OBJS) $(LIBS)
-
-#%.o: %.c
-#	$(CC) $(FLAGS) -c $<
-#	$(CC) $(FLAGS) -MM $< > $*.d
-
-#clean:
-#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
-
-#-include $(OBJS:.o=.d)
-
-
-
 CC    = gcc
-# NVCC  = nvcc
-FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
-# NVCC_FLAGS = -arch sm_70
+FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
 LIBS  = ../src/libgravity.a -ldl -lm
-# LIBS  = ../src/libgravity.a -ldl -lm -lcudart
-DEST  = mnist_manual
-OBJS  = mnist_manual.o test.o
+DEST  = mnist
+OBJS  = mnist.o
 
 all: $(OBJS)
 	$(CC) -o $(DEST) $(OBJS) $(LIBS)
@@ -51,13 +28,36 @@ all: $(OBJS)
 	$(CC) $(FLAGS) -c $<
 	$(CC) $(FLAGS) -MM $< > $*.d
 
-test.o: ../src/test.c ../src/test.h
-	$(CC) $(FLAGS) -c ../src/test.c -o test.o
-
-#test.o: ../src/test.cu ../src/test.h
-#	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
-
 clean:
 	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
 
 -include $(OBJS:.o=.d)
+
+
+
+#CC    = gcc
+# NVCC  = nvcc
+#FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
+# NVCC_FLAGS = -arch sm_70
+#LIBS  = ../src/libgravity.a -ldl -lm
+# LIBS  = ../src/libgravity.a -ldl -lm -lcudart
+#DEST  = mnist_manual
+#OBJS  = mnist_manual.o test.o
+
+#all: $(OBJS)
+#	$(CC) -o $(DEST) $(OBJS) $(LIBS)
+
+#%.o: %.c
+#	$(CC) $(FLAGS) -c $<
+#	$(CC) $(FLAGS) -MM $< > $*.d
+
+#test.o: ../src/test.c ../src/test.h
+#	$(CC) $(FLAGS) -c ../src/test.c -o test.o
+
+#test.o: ../src/test.cu ../src/test.h
+#	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
+
+#clean:
+	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
+
+#-include $(OBJS:.o=.d)
