@@ -143,7 +143,6 @@ inst_random(const struct g__ann_program_inst *inst, FILE *file)
 	      "    %s i;\n"
 	      "    for (i=0; i<%lu; ++i) {\n"
 	      "      r = (%s)10;\n"
-	    //   "      r = (%s)rand() / RAND_MAX;\n"
 	      "      z[i] = %f + r * %f;\n"
 	      "    }\n"
 	      "  }\n\n",
