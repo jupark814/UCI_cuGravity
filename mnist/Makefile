@@ -81,12 +81,12 @@ all: $(TARGET)
 
 # Link the final executable
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(LIBS) -lcudart
+	$(NVCC) -o $@ $^ $(LIBS) -lcudart
 
 # Compile the driver file
 %.o: %.c
-	$(CC) $(FLAGS) -c $<
-	$(CC) $(FLAGS) -MM $< > $*.d
+	$(NVCC) $(FLAGS) -c $<
+	$(NVCC) $(FLAGS) -MM $< > $*.d
 
 # Compile the CUDA file
 #test.o: ../src/test.cu ../src/test.h
