@@ -85,8 +85,8 @@ $(TARGET): $(OBJS)
 
 # Compile the driver file
 %.o: %.c
-	$(NVCC) $(FLAGS) -c $<
-	$(NVCC) $(FLAGS) -MM $< > $*.d
+	$(NVCC) $(NVCC_FLAGS) -c $<
+	$(NVCC) $(NVCC_FLAGS) -MM $< > $*.d
 
 # Compile the CUDA file
 #test.o: ../src/test.cu ../src/test.h
