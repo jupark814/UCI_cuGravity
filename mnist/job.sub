@@ -24,10 +24,6 @@ echo -e "\n"
 module load cudasdk/22.9
 module load gcc/8.4.0
 
-# Compile the Code
-gcc -std=c99 -o sumC sumArraysOnHost.c
-nvcc -o vec_add vector_addition.cu
-
 echo -e "=== Running mnist_manual ==="
 make clean && make
 ./mnist_manual
