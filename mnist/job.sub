@@ -1,11 +1,42 @@
+##!/bin/bash
+##SBATCH --job-name="mnist"
+##SBATCH -A givargis_lab
+#
+##SBATCH --partition=standard
+##SBATCH --nodes=1
+##SBATCH --ntasks=1
+##SBATCH --cpus-per-task=1
+##SBATCH --error=%x.err
+##SBATCH --out=%x.out
+#
+#hn='hostname'
+#echo "Running job on host $hn"
+#
+#echo "=== CPU Information ==="
+#lscpu
+#echo ""
+#
+#echo ""
+#echo "=== GPU Information ==="
+##nvidia-smi
+#
+#echo -e "\n"
+#
+##module load cudasdk/22.9
+#
+#make clean && make
+#./mnist
+##./mnist_manual
+#
+#echo "=== Job Completed ==="
+#
+#
 #!/bin/bash
-#SBATCH --job-name="mnist"
-#SBATCH -A givargis_lab
+#SBATCH --job-name="mnist_manual"
+#SBATCH -A givargis_lab_gpu
 
-#SBATCH --partition=standard
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:V100:1
 #SBATCH --error=%x.err
 #SBATCH --out=%x.out
 
@@ -18,14 +49,20 @@ echo ""
 
 echo ""
 echo "=== GPU Information ==="
-#nvidia-smi
+nvidia-smi
 
 echo -e "\n"
 
-#module load cudasdk/22.9
+# Environment Setup
+module load cudasdk/22.9
+module load gcc/8.4.0
 
+# Compile the Code
+gcc -std=c99 -o sumC sumArraysOnHost.c
+nvcc -o vec_add vector_addition.cu
+
+echo -e "=== Running mnist_manual ==="
 make clean && make
-./mnist
-#./mnist_manual
+./mnist_manual
 
 echo "=== Job Completed ==="
