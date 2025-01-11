@@ -89,8 +89,8 @@ $(TARGET): $(OBJS)
 	$(CC) $(FLAGS) -MM $< > $*.d
 
 # Compile the CUDA file
-test.o: ../src/test.cu ../src/test.h
-	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
+#test.o: ../src/test.cu ../src/test.h
+#	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
 #	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
 
 # Clean up generated files

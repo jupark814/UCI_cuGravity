@@ -25,7 +25,8 @@ module load cudasdk/22.9
 module load gcc/8.4.0
 
 echo -e "=== Running mnist_manual ==="
-make clean && make
+nvcc -arch sm_70 ../src/test.cu -o test
+make
 ./mnist_manual
 
 echo "=== Job Completed ==="
