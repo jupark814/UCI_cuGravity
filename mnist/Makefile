@@ -59,42 +59,29 @@
 
 
 #CUDA Compilation
-# Compiler and Flags
 CC    = gcc
 NVCC  = nvcc
-FLAGS = -std=c11 -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
-NVCC_FLAGS = -arch=sm_70 -I../src
+FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
+NVFLAGS = -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm
+DEST  = mnist_manual
+OBJS  = mnist_manual.o test.o
 
-# Executable Name
-TARGET = mnist_manual
+all: $(OBJS)
+	$(CC) -o $(DEST) $(OBJS) $(LIBS)
 
-# Source Files
-DRIVER_SRCS = mnist_manual.c
-CUDA_SRCS = test.cu
-
-# Object Files
-OBJS = mnist_manual.o test.o
-
-# Rules
-all: $(TARGET)
-
-# Link the final executable
-$(TARGET): $(OBJS)
-	$(NVCC) -o $@ $^ $(LIBS) -lcudart
-
-# Compile the driver file
 %.o: %.c
-	$(NVCC) $(NVCC_FLAGS) -c $<
-	$(NVCC) $(NVCC_FLAGS) -MM $< > $*.d
+	$(CC) $(FLAGS) -c $<
+	$(CC) $(FLAGS) -MM $< > $*.d
 
-# Compile the CUDA file
-#test.o: ../src/test.cu ../src/test.h
-#	$(NVCC) $(NVCC_FLAGS) -c $< -o $@
-#	$(NVCC) $(NVCC_FLAGS) -c ../src/test.cu -o test.o
+%.o: %.cu
+	$(NVCC) $(NVFLAGS) -c $<
+	$(NVCC) $(NVFLAGS) -M $< > $*.d
 
-# Clean up generated files
+test.o: ../src/test.cu ../src/test.h
+	$(NVCC) $(NVFLAGS) -c ../src/test.cu -o test.o
+
 clean:
-	rm -f $(OBJS) $(TARGET) *.o *.d *~ *#
+	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
 
 -include $(OBJS:.o=.d)

@@ -21,11 +21,10 @@ nvidia-smi
 echo -e "\n"
 
 # Environment Setup
-module load cudasdk/22.9
+module load cuda/11.7.1
 module load gcc/8.4.0
 
 echo -e "=== Running mnist_manual ==="
-nvcc -arch sm_70 ../src/test.cu -o test
 make
 ./mnist_manual
 
