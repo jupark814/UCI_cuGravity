@@ -57,8 +57,7 @@
 #
 #-include $(OBJS:.o=.d)
 
-
-#CUDA Compilation
+#CUDA Compilation (Manual)
 CC    = gcc
 NVCC  = nvcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
