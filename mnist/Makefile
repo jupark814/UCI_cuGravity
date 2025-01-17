@@ -30,8 +30,7 @@
 #	$(CC) $(FLAGS) -MM $< > $*.d
 #
 #clean:
-#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
-#	rm *.out *.err
+#	rm -f $(DEST) $(OBJS) *.o *.d *~ *# *.out *.err
 #
 #-include $(OBJS:.o=.d)
 
@@ -54,8 +53,7 @@ test.o: ../src/test.c ../src/test.h
 	$(CC) $(FLAGS) -c ../src/test.c -o test.o
 
 clean:
-	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
-	rm *.out *.err
+	rm -f $(DEST) $(OBJS) *.o *.d *~ *# *.out *.err
 
 -include $(OBJS:.o=.d)
 
@@ -83,7 +81,6 @@ clean:
 #	$(NVCC) $(NVFLAGS) -c ../src/test.cu -o test.o
 
 #clean:
-#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
-#	rm *.out *.err
+#	rm -f $(DEST) $(OBJS) *.o *.d *~ *# *.out *.err
 #
 #-include $(OBJS:.o=.d)
