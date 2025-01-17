@@ -92,7 +92,7 @@ train_and_test(void *alloc_mem,
 		fprintf(stderr, "out of memory\n");
 		return -1;
 	}
-
+    srand(10);
 	/* train */
 
 	t[0] = usec();
@@ -277,7 +277,7 @@ main()
 	for (i=0; i<EPOCHS; ++i) {
 		printf("--- EPOCH %d ---\n", i);
 		if (!e) {
-            /*srand(10);*/
+            srand(10);
 			if (train_and_test(alloc_mem,
 					   train_y,
 					   train_x,
