@@ -60,8 +60,8 @@
 #CUDA Compilation (Manual)
 CC    = gcc
 NVCC  = nvcc
-FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O1 -I../src
-NVFLAGS = -O1 -I../src
+FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
+NVFLAGS = -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm -lcudart
 DEST  = mnist_manual
 OBJS  = mnist_manual.o test.o
@@ -70,8 +70,8 @@ all: $(OBJS)
 	$(NVCC) -o $(DEST) $(OBJS) $(LIBS)
 
 %.o: %.c
-	$(CC) $(FLAGS) -c $<
-	$(CC) $(FLAGS) -MM $< > $*.d
+	$(NVCC) $(NVFLAGS) -c $<
+	$(NVCC) $(NVFLAGS) -MM $< > $*.d
 
 %.o: %.cu
 	$(NVCC) $(NVFLAGS) -c $<
