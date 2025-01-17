@@ -35,7 +35,7 @@
 #-include $(OBJS:.o=.d)
 
 
-Manual Compilation
+#Manual Compilation
 CC    = gcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm
