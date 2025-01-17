@@ -58,20 +58,20 @@
 #-include $(OBJS:.o=.d)
 
 #CUDA Compilation (Manual)
-#CC    = gcc
+CC    = gcc
 NVCC  = nvcc
-#FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
+FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 NVFLAGS = -O3 -I../src
 LIBS  = ../src/libgravity.a -ldl -lm -lcudart
 DEST  = mnist_manual
 OBJS  = mnist_manual.o test.o
 
 all: $(OBJS)
-	$(NVCC) -o $(DEST) $(OBJS) $(LIBS)
+	$(CC) -o $(DEST) $(OBJS) $(LIBS)
 
 %.o: %.c
-	$(NVCC) $(NVFLAGS) -c $<
-	$(NVCC) $(NVFLAGS) -MM $< > $*.d
+	$(CC) $(NVFLAGS) -c $<
+	$(CC) $(NVFLAGS) -MM $< > $*.d
 
 %.o: %.cu
 	$(NVCC) $(NVFLAGS) -c $<
