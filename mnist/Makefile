@@ -16,26 +16,26 @@
 #
 
 #Automatic Compilation
-CC    = gcc
-FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
-LIBS  = ../src/libgravity.a -ldl -lm
-DEST  = mnist
-OBJS  = mnist.o
+#CC    = gcc
+#FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3
+#LIBS  = ../src/libgravity.a -ldl -lm
+#DEST  = mnist
+#OBJS  = mnist.o
+#
+#all: $(OBJS)
+#	$(CC) -o $(DEST) $(OBJS) $(LIBS)
+#
+#%.o: %.c
+#	$(CC) $(FLAGS) -c $<
+#	$(CC) $(FLAGS) -MM $< > $*.d
+#
+#clean:
+#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
+#
+#-include $(OBJS:.o=.d)
 
-all: $(OBJS)
-	$(CC) -o $(DEST) $(OBJS) $(LIBS)
 
-%.o: %.c
-	$(CC) $(FLAGS) -c $<
-	$(CC) $(FLAGS) -MM $< > $*.d
-
-clean:
-	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
-
--include $(OBJS:.o=.d)
-
-
-##Manual Compilation
+#Manual Compilation
 #CC    = gcc
 #FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 #LIBS  = ../src/libgravity.a -ldl -lm
@@ -57,30 +57,30 @@ clean:
 #
 #-include $(OBJS:.o=.d)
 
-##CUDA Compilation (Manual)
+#CUDA Compilation (Manual)
 #CC    = gcc
-#NVCC  = nvcc
+NVCC  = nvcc
 #FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
-#NVFLAGS = -O3 -I../src
-#LIBS  = ../src/libgravity.a -ldl -lm -lcudart
-#DEST  = mnist_manual
-#OBJS  = mnist_manual.o test.o
-#
-#all: $(OBJS)
-#	$(NVCC) -o $(DEST) $(OBJS) $(LIBS)
-#
-#%.o: %.c
-#	$(NVCC) $(NVFLAGS) -c $<
-#	$(NVCC) $(NVFLAGS) -MM $< > $*.d
-#
-#%.o: %.cu
-#	$(NVCC) $(NVFLAGS) -c $<
-#	$(NVCC) $(NVFLAGS) -M $< > $*.d
+NVFLAGS = -O3 -I../src
+LIBS  = ../src/libgravity.a -ldl -lm -lcudart
+DEST  = mnist_manual
+OBJS  = mnist_manual.o test.o
 
+all: $(OBJS)
+	$(NVCC) -o $(DEST) $(OBJS) $(LIBS)
+
+%.o: %.c
+	$(NVCC) $(NVFLAGS) -c $<
+	$(NVCC) $(NVFLAGS) -MM $< > $*.d
+
+%.o: %.cu
+	$(NVCC) $(NVFLAGS) -c $<
+	$(NVCC) $(NVFLAGS) -M $< > $*.d
+#
 #test.o: ../src/test.cu ../src/test.h
 #	$(NVCC) $(NVFLAGS) -c ../src/test.cu -o test.o
-
-#clean:
-#	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
 #
-#-include $(OBJS:.o=.d)
+clean:
+	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
+
+-include $(OBJS:.o=.d)
