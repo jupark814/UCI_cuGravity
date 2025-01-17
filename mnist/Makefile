@@ -77,8 +77,8 @@ all: $(OBJS)
 	$(NVCC) $(NVFLAGS) -c $<
 	$(NVCC) $(NVFLAGS) -M $< > $*.d
 
-test.o: ../src/test.cu ../src/test.h
-	$(NVCC) $(NVFLAGS) -c ../src/test.cu -o test.o
+#test.o: ../src/test.cu ../src/test.h
+#	$(NVCC) $(NVFLAGS) -c ../src/test.cu -o test.o
 
 clean:
 	rm -f $(DEST) $(OBJS) *.o *.d *~ *#
