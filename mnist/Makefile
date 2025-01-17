@@ -67,7 +67,7 @@ DEST  = mnist_manual
 OBJS  = mnist_manual.o test.o
 
 all: $(OBJS)
-	$(NVCC) -o $(DEST) $(OBJS) $(LIBS)
+	$(CC) -o $(DEST) $(OBJS) $(LIBS)
 
 %.o: %.c
 	$(CC) $(FLAGS) -c $<
