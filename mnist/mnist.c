@@ -280,7 +280,7 @@ main()
 	for (i=0; i<EPOCHS; ++i) {
 		printf("--- EPOCH %d ---\n", i);
 		if (!e) {
-			//srand(10);
+			/*srand(10);*/
 			if (train_and_test(g,
 					   train_y,
 					   train_x,
