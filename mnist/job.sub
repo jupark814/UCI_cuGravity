@@ -51,7 +51,7 @@ echo ""
 echo -e "\n"
 
 make clean && make
-#./mnist
-./mnist_manual
+./mnist
+#./mnist_manual
 
 echo "=== Job Completed ==="
