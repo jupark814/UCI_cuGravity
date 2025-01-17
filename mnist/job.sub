@@ -31,7 +31,32 @@
 #echo "=== Job Completed ==="
 #
 
-#SBATCH --job-name="mnist_manual"
+##SBATCH --job-name="mnist_manual"
+##SBATCH -A givargis_lab
+#
+##SBATCH --partition=standard
+##SBATCH --nodes=1
+##SBATCH --ntasks=1
+##SBATCH --cpus-per-task=1
+##SBATCH --error=%x.err
+##SBATCH --out=%x.out
+#
+#hn='hostname'
+#echo "Running job on host $hn"
+#
+#echo "=== CPU Information ==="
+#lscpu
+#echo ""
+#
+#echo -e "\n"
+#
+#make clean && make
+#./mnist_manual
+#
+#echo "=== Job Completed ==="
+
+
+#SBATCH --job-name="mnist"
 #SBATCH -A givargis_lab
 
 #SBATCH --partition=standard
@@ -54,28 +79,3 @@ make clean && make
 ./mnist
 
 echo "=== Job Completed ==="
-
-
-##SBATCH --job-name="mnist"
-##SBATCH -A givargis_lab
-#
-##SBATCH --partition=standard
-##SBATCH --nodes=1
-##SBATCH --ntasks=1
-##SBATCH --cpus-per-task=1
-##SBATCH --error=%x.err
-##SBATCH --out=%x.out
-#
-#hn='hostname'
-#echo "Running job on host $hn"
-#
-#echo "=== CPU Information ==="
-#lscpu
-#echo ""
-#
-#echo -e "\n"
-#
-#make clean && make
-#./mnist
-#
-#echo "=== Job Completed ==="
