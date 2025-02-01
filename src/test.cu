@@ -29,6 +29,17 @@ __global__ void initialize_random1(float *out, int inputLength) {
         out[idx] = -0.030000 + r * 0.060000;
     }
 }
+
+__global__ void initialize_random2(float *out, int inputLength) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < inputLength) {
+        curandState state;
+        curand_init(10, idx, 0, &state);
+        float r = curand_uniform(&state);
+        out[idx] = -0.054545 + r * 0.109091;
+    }
+}
+
 __global__ void clear_memory(float *m, int offset, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < size) {
@@ -87,12 +98,23 @@ static void _initialize_(char *m_) {
   }
 
   { /* RANDOM */
-    float r, *z = (float *)( m_ + 354400 );
-    uint32_t i;
-    for (i=0; i<1000; ++i) {
-      r = (float)rand() / RAND_MAX;
-      z[i] = -0.054545 + r * 0.109091;
-    }
+    //float r, *z = (float *)( m_ + 354400 );
+    //uint32_t i;
+    //for (i=0; i<1000; ++i) {
+    //  r = (float)rand() / RAND_MAX;
+    //  z[i] = -0.054545 + r * 0.109091;
+    //}
+    /* RANDOM */
+    float *z = (float *)( m_ + 354400 );
+    int size = 1000*sizeof(float);
+    float *deviceOutput;
+    cudaMalloc((void**) &deviceOutput, size);
+    dim3 DimGrid(ceil(1000/256.0), 1, 1);
+    dim3 DimBlock(256, 1, 1);
+    initialize_random2<<<DimGrid, DimBlock>>>(deviceOutput, 1000);
+    cudaDeviceSynchronize();
+    cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
+    cudaFree(deviceOutput);
   }
 
   { /* CLEAR */
