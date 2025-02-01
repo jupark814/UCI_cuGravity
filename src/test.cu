@@ -10,13 +10,13 @@
 #include <math.h>
 #include "test.h"
 
-__global__ void initialize_random(float *m, int offset, int size, float lower, float upper, unsigned int seed) {
+__global__ void initialize_random(float *out, int inputLength) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < size) {
+    if (idx < inputLength) {
         curandState state;
-        curand_init(seed, idx, 0, &state);
+        curand_init(10, idx, 0, &state);
         float r = curand_uniform(&state);
-        m[offset + idx] = lower + r * (upper - lower);
+        out[idx] = -0.006787 + r * 0.013575;
     }
 }
 
