@@ -41,8 +41,8 @@ static void _initialize_(char *m_) {
     int size = 78400*sizeof(float);
     float *deviceOutput;
     cudaMalloc((void**) &deviceOutput, size);
-    int DimGrid(ceil(78400/256.0), 1, 1);
-    int DimBlock(256, 1, 1);
+    dim3 DimGrid(ceil(78400/256.0), 1, 1);
+    dim3 DimBlock(256, 1, 1);
     initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 78400);
     cudaDeviceSynchronize();
     cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
