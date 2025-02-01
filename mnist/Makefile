@@ -62,7 +62,7 @@ CC    = gcc
 NVCC  = nvcc
 FLAGS = -ansi -pedantic -Wshadow -Wall -Wextra -Werror -Wfatal-errors -fPIC -O3 -I../src
 NVFLAGS = -O3 -I../src
-LIBS  = ../src/libgravity.a -ldl -lm -lcudart
+LIBS  = ../src/libgravity.a -ldl -lm -lcudart -lcurand
 DEST  = cu_mnist_manual
 OBJS  = mnist_manual.o test.o
 
