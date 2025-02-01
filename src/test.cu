@@ -37,14 +37,15 @@ static void _initialize_(char *m_) {
     //}
 
     /* RANDOM */
-    float r, *z = (float *)( m_ + 0 );
+    float *z = (float *)( m_ + 0 );
     int size = 78400*sizeof(float);
+    float *deviceOutput;
     cudaMalloc((void**) &deviceOutput, size);
     int DimGrid(ceil(78400/256.0), 1, 1);
     int DimBlock(256, 1, 1);
     initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 78400);
     cudaDeviceSynchronize();
-    cudamemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
     cudaFree(deviceOutput);
   }
 
