@@ -10,8 +10,6 @@
 #include <math.h>
 #include "test.h"
 
-#define THREADS_PER_BLOCK 256
-
 __global__ void initialize_random(float *m, int offset, int size, float lower, float upper, unsigned int seed) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < size) {
@@ -31,18 +29,23 @@ __global__ void clear_memory(float *m, int offset, int size) {
 
 static void _initialize_(char *m_) {
   { /* RANDOM */
-    float r, *z = (float *)( m_ + 0 );
-    uint32_t i;
-    for (i=0; i<78400; ++i) {
-      r = (float)rand() / RAND_MAX;
-      z[i] = -0.006787 + r * 0.013575;
-    }
-    int blockSize = THREADS_PER_BLOCK;
+    //float r, *z = (float *)( m_ + 0 );
+    //uint32_t i;
+    //for (i=0; i<78400; ++i) {
+    //  r = (float)rand() / RAND_MAX;
+    //  z[i] = -0.006787 + r * 0.013575;
+    //}
 
-    // First random initialization
-    int numElements1 = 78400;
-    int numBlocks1 = (numElements1 + blockSize - 1) / blockSize;
-    initialize_random<<<numBlocks1, blockSize>>>(d_m, 0, numElements1, -0.006787f, 0.013575f, 1234);
+    /* RANDOM */
+    float r, *z = (float *)( m_ + 0 );
+    int size = 78400*sizeof(float);
+    cudaMalloc((void**) &deviceOutput, size);
+    int DimGrid(ceil(78400/256.0), 1, 1);
+    int DimBlock(256, 1, 1);
+    initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 78400);
+    cudaDeviceSynchronize();
+    cudamemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
+    cudaFree(deviceOutput);
   }
 
   { /* CLEAR */
