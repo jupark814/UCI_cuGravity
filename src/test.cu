@@ -37,6 +37,12 @@ static void _initialize_(char *m_) {
       r = (float)rand() / RAND_MAX;
       z[i] = -0.006787 + r * 0.013575;
     }
+    int blockSize = THREADS_PER_BLOCK;
+
+    // First random initialization
+    int numElements1 = 78400;
+    int numBlocks1 = (numElements1 + blockSize - 1) / blockSize;
+    initialize_random<<<numBlocks1, blockSize>>>(d_m, 0, numElements1, -0.006787f, 0.013575f, 1234);
   }
 
   { /* CLEAR */
