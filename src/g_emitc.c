@@ -785,7 +785,7 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 			"      float r = curand_uniform(&state);\n"
 			"      out[idx] = param1 + r * param2;\n"
 			"    }\n"
-			"  }\n\n",
+			"  }\n\n"
 			)) {
 			G__DEBUG(0);
 			return -1;
