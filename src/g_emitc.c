@@ -144,12 +144,12 @@ inst_random(const struct g__ann_program_inst *inst, FILE *file)
 			"    %s size = %lu*sizeof(float);\n"
 			"    float *deviceOutput;\n"
 			"    cudaMalloc((void**) &deviceOutput, size);\n"
-			"    dim3 DimGrid(ceil(%lu/256.0),1,1);\n"
+			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
 			"    dim3 DimBlock(256,1,1);\n"
-			"    _CUrandom_<<<DimGrid, DimBlock>>>(deviceOutput, %lu, %f, %f)\n"
+			"    _CUrandom_<<<DimGrid, DimBlock>>>(deviceOutput, %lu, %f, %f);\n"
 			"    cudaDeviceSynchronize();\n"
-			"    cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost)\n"
-			"    cudaFree(devieceOutput);\n"
+			"    cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);\n"
+			"    cudaFree(deviceOutput);\n"
 			"  }\n\n",
 			precision(inst),
 			precision(inst),
@@ -776,16 +776,16 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 {
 	if (ann->cuda) {
 		if (P(file,
-			"  { /* _CUrandom_ */\n"
-			"  __global__ void _CUrandom_(float *out, int inputLength, float param1, float param2) {\n"
-			"    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
-			"    if (idx < inputLength) {\n"
-			"      curandState state;\n"
-			"      curand_init(10, idx, 0, &state);\n"
-			"      float r = curand_uniform(&state);\n"
-			"      out[idx] = param1 + r * param2;\n"
-			"    }\n"
-			"  }\n\n"
+			"/* _CUrandom_ */\n"
+			"__global__ void _CUrandom_(float *out, int inputLength, float param1, float param2) {\n"
+			"  int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
+			"  if (idx < inputLength) {\n"
+			"    curandState state;\n"
+			"    curand_init(10, idx, 0, &state);\n"
+			"    float r = curand_uniform(&state);\n"
+			"    out[idx] = param1 + r * param2;\n"
+			"  }\n"
+			"}\n\n"
 			)) {
 			G__DEBUG(0);
 			return -1;
