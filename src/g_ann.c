@@ -109,7 +109,7 @@ emit_program_initialize(struct g__ann *ann,
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
-
+	inst->cuda_inst = ann->cuda;
 	/*
 	 * w[*]
 	 *   w[*] = random [-6.0 / (n + m) -- +6.0 / (n + m)]
@@ -129,6 +129,7 @@ emit_program_initialize(struct g__ann *ann,
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = G__ANN_PROGRAM_INST_CLEAR;
@@ -137,6 +138,7 @@ emit_program_initialize(struct g__ann *ann,
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 	}
 	return 0;
 }
@@ -168,7 +170,7 @@ emit_program_activate(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
-
+	inst->cuda_inst = ann->cuda;
 	/*
 	 * a_[*]:
 	 *    a_[0] := x
@@ -183,7 +185,7 @@ emit_program_activate(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
-
+	inst->cuda_inst = ann->cuda;
 	/*
 	 * a_[*]:
 	 *    a_[l] := activation( w[l] * a_[l - 1] + b[l] )
@@ -209,6 +211,7 @@ emit_program_activate(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = G__ANN_PROGRAM_INST_ADD;
@@ -218,6 +221,7 @@ emit_program_activate(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = 100 + ir->nodes[l].activation;
@@ -226,6 +230,7 @@ emit_program_activate(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 	}
 	return 0;
 }
@@ -251,6 +256,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
+	inst->cuda_inst = ann->cuda;
 
 	/*
 	 * d_[*]:
@@ -279,6 +285,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
+	inst->cuda_inst = ann->cuda;
 
 	/*
 	 * d_[*]:
@@ -310,6 +317,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = 1000 + ir->nodes[l - 1].activation;
@@ -319,6 +327,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		--l;
 	}
 
@@ -342,6 +351,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = G__ANN_PROGRAM_INST_MAC3;
@@ -353,6 +363,7 @@ emit_program_backprop(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 	}
 	return 0;
 }
@@ -378,6 +389,7 @@ emit_program_train(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
+	inst->cuda_inst = ann->cuda;
 
 	/*
 	 * adjustments:
@@ -400,6 +412,7 @@ emit_program_train(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->whole = precision->whole;
 	inst->fraction = precision->fraction;
 	inst->precision = precision->precision;
+	inst->cuda_inst = ann->cuda;
 
 	/*
 	 * for each (x -> y) pair:
@@ -416,6 +429,7 @@ emit_program_train(struct g__ann *ann, const struct g__ir *ir, int program_)
 	inst->arg[0].i = ir->batch;
 	inst->arg[1].i = n;
 	inst->arg[2].i = m;
+	inst->cuda_inst = ann->cuda;
 
 	/*
 	 * w[*]:
@@ -450,6 +464,7 @@ emit_program_train(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 		/*--*/
 		inst = newinst(program);
 		inst->opc = G__ANN_PROGRAM_INST_MAC4;
@@ -461,6 +476,7 @@ emit_program_train(struct g__ann *ann, const struct g__ir *ir, int program_)
 		inst->whole = precision->whole;
 		inst->fraction = precision->fraction;
 		inst->precision = precision->precision;
+		inst->cuda_inst = ann->cuda;
 	}
 	return 0;
 }

@@ -137,25 +137,53 @@ inst_batchloop(const struct g__ann_program_inst *inst, FILE *file)
 static int
 inst_random(const struct g__ann_program_inst *inst, FILE *file)
 {
-	if (P(file,
-	      "  { /* RANDOM */\n"
-	      "    %s r, *z = (%s *)( m_ + %lu );\n"
-	      "    %s i;\n"
-	      "    for (i=0; i<%lu; ++i) {\n"
-  		  "      r = (%s)rand() / RAND_MAX;\n"
-	      "      z[i] = %f + r * %f;\n"
-	      "    }\n"
-	      "  }\n\n",
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[0].i),
-	      type(inst->arg[3].i),
-	      UL(inst->arg[3].i),
-	      precision(inst),
-	      inst->arg[1].r,
-	      inst->arg[2].r)) {
-		G__DEBUG(0);
-		return -1;
+	if (inst->cuda_inst) {
+		if (P(file,
+			"  { /* RANDOM */\n"
+			"    %s *z = (%s *)( m_ + %lu );\n"
+			"	 %s size = %lu*sizeof(float);\n"
+			"	 float *deviceOutput;\n"
+			"	 cudaMalloc((void**) &deviceOutput, size);\n"
+			"    dim3 DimGrid(ceil(%lu/256.0),1,1);\n"
+			"	 dim3 DimBlock(256,1,1);\n"
+			"	 _CUrandom_<<<DimGrid, DimBlock>>>(deviceOutput, %lu, %f, %f)\n"
+			"	 cudaDeviceSynchronize();\n"
+			"	 cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost)\n"
+			"	 cudaFree(devieceOutput);\n"
+			"  }\n\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+	      	type(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			inst->arg[1].r,
+			inst->arg[2].r)) {
+			G__DEBUG(0);
+			return -1;
+		}
+	} else {
+		if (P(file,
+			"  { /* RANDOM */\n"
+			"    %s r, *z = (%s *)( m_ + %lu );\n"
+			"    %s i;\n"
+			"    for (i=0; i<%lu; ++i) {\n"
+			"      r = (%s)rand() / RAND_MAX;\n"
+			"      z[i] = %f + r * %f;\n"
+			"    }\n"
+			"  }\n\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			type(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			precision(inst),
+			inst->arg[1].r,
+			inst->arg[2].r)) {
+			G__DEBUG(0);
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -714,15 +742,30 @@ header(const struct g__ann *ann, FILE *file, int includes)
 	      ann->module)) {
 	}
 	if (includes) {
-		if (P(file,
+		if (ann->cuda) {
+			if (P(file,
+			  "#include <cuda_runtime.h>\n"
+			  "#include <curand_kernel.h>\n"
 		      "#include <stdlib.h>\n"
 		      "#include <stdint.h>\n"
 		      "#include <string.h>\n"
 		      "#include <math.h>\n"
 		      "#include \"%s.h\"\n\n",
 		      ann->module)) {
-			G__DEBUG(0);
-			return -1;
+				G__DEBUG(0);
+				return -1;
+			}
+		} else {
+			if (P(file,
+		      "#include <stdlib.h>\n"
+		      "#include <stdint.h>\n"
+		      "#include <string.h>\n"
+		      "#include <math.h>\n"
+		      "#include \"%s.h\"\n\n",
+		      ann->module)) {
+				G__DEBUG(0);
+				return -1;
+			}
 		}
 	}
 	return 0;

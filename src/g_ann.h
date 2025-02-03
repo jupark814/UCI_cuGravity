@@ -80,6 +80,7 @@ struct g__ann {
 			int whole;
 			int fraction;
 			int precision;
+			int cuda_inst;
 			union {
 				uint64_t i;
 				double r;

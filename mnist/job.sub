@@ -41,12 +41,8 @@ LOGGER_PID=$!
 ./cu_mnist_manual
 kill $LOGGER_PID
 
-echo ""
-
 echo "Final GPU Status:" >> gpu_usage.log
 nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv >> gpu_usage.log
-
-echo -e "\n"
 
 echo "=== Job Completed ==="
 
