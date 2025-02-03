@@ -10,33 +10,13 @@
 #include <math.h>
 #include "test.h"
 
-__global__ void initialize_random(float *out, int inputLength) {
+__global__ void initialize_random(float *out, int inputLength, float param1, float param2) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < inputLength) {
         curandState state;
         curand_init(10, idx, 0, &state);
         float r = curand_uniform(&state);
-        out[idx] = -0.006787 + r * 0.013575;
-    }
-}
-
-__global__ void initialize_random1(float *out, int inputLength) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < inputLength) {
-        curandState state;
-        curand_init(10, idx, 0, &state);
-        float r = curand_uniform(&state);
-        out[idx] = -0.030000 + r * 0.060000;
-    }
-}
-
-__global__ void initialize_random2(float *out, int inputLength) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < inputLength) {
-        curandState state;
-        curand_init(10, idx, 0, &state);
-        float r = curand_uniform(&state);
-        out[idx] = -0.054545 + r * 0.109091;
+        out[idx] = param1 + r * param2;
     }
 }
 
@@ -63,7 +43,7 @@ static void _initialize_(char *m_) {
     cudaMalloc((void**) &deviceOutput, size);
     dim3 DimGrid(ceil(78400/256.0), 1, 1);
     dim3 DimBlock(256, 1, 1);
-    initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 78400);
+    initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 78400, -0.006787, 0.013575);
     cudaDeviceSynchronize();
     cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
     cudaFree(deviceOutput);
@@ -87,7 +67,7 @@ static void _initialize_(char *m_) {
     cudaMalloc((void**) &deviceOutput, size);
     dim3 DimGrid(ceil(10000/256.0), 1, 1);
     dim3 DimBlock(256, 1, 1);
-    initialize_random1<<<DimGrid, DimBlock>>>(deviceOutput, 10000);
+    initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 10000, -0.030000, 0.060000);
     cudaDeviceSynchronize();
     cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
     cudaFree(deviceOutput);
@@ -111,7 +91,7 @@ static void _initialize_(char *m_) {
     cudaMalloc((void**) &deviceOutput, size);
     dim3 DimGrid(ceil(1000/256.0), 1, 1);
     dim3 DimBlock(256, 1, 1);
-    initialize_random2<<<DimGrid, DimBlock>>>(deviceOutput, 1000);
+    initialize_random<<<DimGrid, DimBlock>>>(deviceOutput, 1000, -0.054545, 0.109091);
     cudaDeviceSynchronize();
     cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost);
     cudaFree(deviceOutput);
