@@ -772,6 +772,29 @@ header(const struct g__ann *ann, FILE *file, int includes)
 }
 
 static int
+cudaFunction(const struct g__ann *ann, FILE *file)
+{
+	if (ann->cuda) {
+		if (P(file,
+			"  { /* _CUrandom_ */\n"
+			"  __global__ void _CUrandom_(float *out, int inputLength, float param1, float param2) {\n"
+			"    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
+			"    if (idx < inputLength) {\n"
+			"      curandState state;\n"
+			"      curand_init(10, idx, 0, &state);\n"
+			"      float r = curand_uniform(&state);\n"
+			"      out[idx] = param1 + r * param2;\n"
+			"    }\n"
+			"  }\n\n",
+			)) {
+			G__DEBUG(0);
+			return -1;
+		}
+	}
+	return 0;
+}
+
+static int
 initialize(const struct g__ann *ann, FILE *file)
 {
 	const struct g__ann_program *prog;
@@ -972,6 +995,7 @@ g__emitc(const struct g__ann *ann, const char *tmp)
 	}
 	if (header(ann, file1, 1) ||
 	    header(ann, file2, 0) ||
+		cudaFunction(ann, file1) ||
 	    initialize(ann, file1) ||
 	    activate(ann, file1) ||
 	    backprop(ann, file1) ||
