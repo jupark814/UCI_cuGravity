@@ -141,15 +141,15 @@ inst_random(const struct g__ann_program_inst *inst, FILE *file)
 		if (P(file,
 			"  { /* RANDOM */\n"
 			"    %s *z = (%s *)( m_ + %lu );\n"
-			"	 %s size = %lu*sizeof(float);\n"
-			"	 float *deviceOutput;\n"
-			"	 cudaMalloc((void**) &deviceOutput, size);\n"
+			"    %s size = %lu*sizeof(float);\n"
+			"    float *deviceOutput;\n"
+			"    cudaMalloc((void**) &deviceOutput, size);\n"
 			"    dim3 DimGrid(ceil(%lu/256.0),1,1);\n"
-			"	 dim3 DimBlock(256,1,1);\n"
-			"	 _CUrandom_<<<DimGrid, DimBlock>>>(deviceOutput, %lu, %f, %f)\n"
-			"	 cudaDeviceSynchronize();\n"
-			"	 cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost)\n"
-			"	 cudaFree(devieceOutput);\n"
+			"    dim3 DimBlock(256,1,1);\n"
+			"    _CUrandom_<<<DimGrid, DimBlock>>>(deviceOutput, %lu, %f, %f)\n"
+			"    cudaDeviceSynchronize();\n"
+			"    cudaMemcpy(z, deviceOutput, size, cudaMemcpyDeviceToHost)\n"
+			"    cudaFree(devieceOutput);\n"
 			"  }\n\n",
 			precision(inst),
 			precision(inst),
