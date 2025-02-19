@@ -23,14 +23,14 @@ __global__ void _CUrandom_(float *out, int inputLength, float param1, float para
 }
 
 /* _CUMAC1_ */
-__global__ void _MAC1_(float *z, float *A, float *B, int num_output, int num_input) {
+__global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_input) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  if (i < num_output) {
+  if (idx < num_output) {
     float sum = 0.0f;
-    for (int j = 0; j < num_input; i++) {
-      sum += A[i*num_input + j] * B[j];
+    for (int j = 0; j < num_input; j++) {
+      sum += A[idx * num_input + j] * B[j];
     }
-    z[i] = sum;
+    z[idx] = sum;
   }
 }
 
