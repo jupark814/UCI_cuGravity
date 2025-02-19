@@ -22,6 +22,18 @@ __global__ void _CUrandom_(float *out, int inputLength, float param1, float para
   }
 }
 
+/* _CUMAC1_ */
+__global__ void _MAC1_(float *z, float *A, float *B, int num_output, int num_input) {
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < num_output) {
+    float sum = 0.0f;
+    for (int j = 0; j < num_input; i++) {
+      sum += A[i*num_input + j] * B[j];
+    }
+    z[i] = sum;
+  }
+}
+
 static void _initialize_(char *m_) {
   { /* RANDOM */
     float *z = (float *)( m_ + 0 );
@@ -86,15 +98,38 @@ static float *_activate_(char *m_, const float *x_) {
 
   { /* MAC1 */
     float *z = (float *)( m_ + 720016 );
-    const float *A = (const float *)( m_ + 0 );
-    const float *B = (const float *)( m_ + 716880 );
-    uint32_t i, j;
-    for (i=0; i<100; ++i) {
-      z[i] = 0.0;
-      for (j=0; j<784; ++j) {
-        z[i] += A[i * 784 + j] * B[j];
-      }
-    }
+    const float *hostA = (const float *)( m_ + 0 );
+    const float *hostB = (const float *)( m_ + 716880 );
+    int size_A = 100 * 784 * sizeof(float);
+    int size_B = 784 * sizeof(float);
+    int size_z = 100 * sizeof(float);
+    float *deviceA;
+    float *deviceB;
+    float *deviceOutput;
+    cudaMalloc((void**) &deviceA, size_A);
+    cudaMalloc((void**) &deviceB, size_B);
+    cudaMalloc((void**) &deviceOutput, size_z);
+    cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);
+    dim3 DimGrid((100+255)/256,1,1);
+    dim3 DimBlock(256,1,1);
+    _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, 100, 784);
+    cudaDeviceSynchronize();
+    cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);
+    cudaFree(deviceA);
+    cudaFree(deviceB);
+    cudaFree(deviceOutput);
+  
+    // float *z = (float *)( m_ + 720016 );
+    // const float *A = (const float *)( m_ + 0 );
+    // const float *B = (const float *)( m_ + 716880 );
+    // uint32_t i, j;
+    // for (i=0; i<100; ++i) {
+    //   z[i] = 0.0;
+    //   for (j=0; j<784; ++j) {
+    //     z[i] += A[i * 784 + j] * B[j];
+    //   }
+    // }
   }
 
   { /* ADD */
