@@ -1,32 +1,30 @@
 #!/bin/bash
 #SBATCH --job-name="cu_mnist_manual"
 #SBATCH -A givargis_lab_gpu
-
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:V100:1
 #SBATCH --error=%x.err
 #SBATCH --out=%x.out
 
-hn='hostname'
+hn=$(hostname)
 echo "Running job on host $hn"
 
 echo "=== CPU Information ==="
 lscpu
 echo ""
 
-echo ""
 echo "=== GPU Information ==="
 nvidia-smi
-
 echo -e "\n"
 
 # Environment Setup
-module load cuda/11.7.1
-module load gcc/8.4.0
+module load cuda/11.7.1 || { echo "CUDA module failed to load"; exit 1; }
+module load gcc/8.4.0 || { echo "GCC module failed to load"; exit 1; }
 
 echo -e "=== Running mnist_manual ==="
+<<<<<<< HEAD
 
-make clean && make
+make clean && make  || { echo "Make failed, exiting."; exit 1; }
 
 # Start logging GPU usage in the background
 echo "Timestamp, PID, Process, Memory Usage" > gpu_usage.log
@@ -39,7 +37,10 @@ done' > /dev/null 2>&1 &
 LOGGER_PID=$!
 
 ./cu_mnist_manual
-kill $LOGGER_PID
+# Ensure LOGGER_PID is still running before killing
+if ps -p $LOGGER_PID > /dev/null; then
+    kill $LOGGER_PID
+fi
 
 echo "Final GPU Status:" >> gpu_usage.log
 nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv >> gpu_usage.log
