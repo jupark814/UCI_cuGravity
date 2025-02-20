@@ -223,35 +223,83 @@ inst_copyx(const struct g__ann_program_inst *inst, FILE *file)
 static int
 inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 {
-	if (P(file,
-	      "  { /* MAC1 */\n"
-	      "    %s *z = (%s *)( m_ + %lu );\n"
-	      "    const %s *A = (const %s *)( m_ + %lu );\n"
-	      "    const %s *B = (const %s *)( m_ + %lu );\n"
-	      "    %s i, j;\n",
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[0].i),
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[1].i),
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[2].i),
-	      type(G__MAX(inst->arg[3].i, inst->arg[4].i))) ||
-	    P(file,
-	      "    for (i=0; i<%lu; ++i) {\n"
-	      "      z[i] = 0.0;\n"
-	      "      for (j=0; j<%lu; ++j) {\n"
-	      "        z[i] += A[i * %lu + j] * B[j];\n"
-	      "      }\n"
-	      "    }\n"
-	      "  }\n\n",
-	      UL(inst->arg[3].i),
-	      UL(inst->arg[4].i),
-	      UL(inst->arg[4].i))) {
-		G__DEBUG(0);
-		return -1;
+	if (inst->cuda_inst) {
+		if (P(file,
+			"  { /* cuMAC1 */\n"
+			"    %s *z = (%s *)( m_ + %lu );\n"
+			"    const %s *A = (const %s *)( m_ + %lu );\n"
+			"    const %s *B = (const %s *)( m_ + %lu );\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[2].i)) ||
+			P(file,
+			"	 int size_A = %lu * %lu * sizeof(float);\n"
+			"	 int size_B = %lu * sizeof(float);\n"
+			"	 int size_z = %lu * sizeof(float);\n"
+			"    float *deviceA;\n"
+			"	 float *deviceB;\n"
+			"	 float *deviceOutput;\n"
+			"	 cudaMalloc((void**) &deviceA, size_A);\n"
+			"	 cudaMalloc((void**) &deviceB, size_B);\n"
+			"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
+			"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
+			"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n"
+			"	 dim3 DimGrid((%lu+255)/256,1,1);\n"
+			"	 dim3 DimBlock(256, 1,1);\n"
+			"	 _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, %lu, %lu);\n"
+			"	 cudaDeviceSynchronize();\n"
+			"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n"
+			"	 cudaFree(deviceA);\n"
+			"	 cudaFree(deviceB);\n"
+			"	 cudaFree(deviceOutput);\n"
+			"  }\n\n",
+			UL(inst->arg[3].i),
+			UL(inst->arg[4].i),
+			UL(inst->arg[4].i),
+			UL(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			UL(inst->arg[3].i),
+			UL(inst->arg[4].i))) {
+			G__DEBUG(0);
+			return -1;
+		}
+	} else {
+		if (P(file,
+			"  { /* MAC1 */\n"
+			"    %s *z = (%s *)( m_ + %lu );\n"
+			"    const %s *A = (const %s *)( m_ + %lu );\n"
+			"    const %s *B = (const %s *)( m_ + %lu );\n"
+			"    %s i, j;\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[2].i),
+			type(G__MAX(inst->arg[3].i, inst->arg[4].i))) ||
+			P(file,
+			"    for (i=0; i<%lu; ++i) {\n"
+			"      z[i] = 0.0;\n"
+			"      for (j=0; j<%lu; ++j) {\n"
+			"        z[i] += A[i * %lu + j] * B[j];\n"
+			"      }\n"
+			"    }\n"
+			"  }\n\n",
+			UL(inst->arg[3].i),
+			UL(inst->arg[4].i),
+			UL(inst->arg[4].i))) {
+			G__DEBUG(0);
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -784,6 +832,18 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 			"    curand_init(10, idx, 0, &state);\n"
 			"    float r = curand_uniform(&state);\n"
 			"    out[idx] = param1 + r * param2;\n"
+			"  }\n"
+			"}\n\n"
+
+			"/* _CUMAC1_ */\n"
+			"__global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_input) {\n"
+			"  int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
+			"  if (idx < num_output) {\n"
+			"    float sum = 0.0f;\n"
+			"    for (int j = 0; j < num_input; j++) {\n"
+			"      sum += A[idx * num_input + j] * B[j];\n"
+			"    }\n"
+			"	 z[idx] = sum;"
 			"  }\n"
 			"}\n\n"
 			)) {
