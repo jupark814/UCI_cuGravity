@@ -30,10 +30,10 @@ make clean && make
 
 # Start logging GPU usage in the background
 echo "Timestamp, PID, Process, Memory Usage" > gpu_usage.log
-while true; do
+nohup bash -c 'while true; do
     echo "$(date +%T), $(nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv | tail -n +2)" >> gpu_usage.log
-    sleep 5  # Log every 5 seconds
-done &
+    sleep 5
+done' > /dev/null 2>&1 &
 
 # Store the process ID (PID) of the logging script
 LOGGER_PID=$!
