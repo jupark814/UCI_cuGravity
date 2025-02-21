@@ -246,29 +246,27 @@ inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 			"	 float *deviceB;\n"
 			"	 float *deviceOutput;\n"
 			"	 cudaMalloc((void**) &deviceA, size_A);\n"
-			"	 cudaMalloc((void**) &deviceB, size_B);\n",
+			"	 cudaMalloc((void**) &deviceB, size_B);\n"
+			"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
+			"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
+			"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n",
 			UL(inst->arg[3].i),
 			UL(inst->arg[4].i),
 			UL(inst->arg[4].i),
 			UL(inst->arg[3].i)) ||
 			P(file,
-				"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
-				"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
-				"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n") ||
-			P(file,
 				"	 dim3 DimGrid((%lu+255)/256,1,1);\n"
 				"	 dim3 DimBlock(256, 1,1);\n"
 				"	 _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, %lu, %lu);\n"
 				"	 cudaDeviceSynchronize();\n"
-				"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n",
+				"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n"
+				"	 cudaFree(deviceA);\n"
+				"	 cudaFree(deviceB);\n"
+				"	 cudaFree(deviceOutput);\n"
+				"  }\n\n",
 				UL(inst->arg[3].i),
 				UL(inst->arg[3].i),
-				UL(inst->arg[4].i)) ||
-				P(file,
-					"	 cudaFree(deviceA);\n"
-					"	 cudaFree(deviceB);\n"
-					"	 cudaFree(deviceOutput);\n"
-					"  }\n\n")) {
+				UL(inst->arg[4].i))) {
 			G__DEBUG(0);
 			return -1;
 		}
@@ -836,20 +834,19 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 			"    float r = curand_uniform(&state);\n"
 			"    out[idx] = param1 + r * param2;\n"
 			"  }\n"
-			"}\n\n"
-
-			"/* _CUMAC1_ */\n"
-			"__global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_input) {\n"
-			"  int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
-			"  if (idx < num_output) {\n"
-			"    float sum = 0.0f;\n"
-			"    for (int j = 0; j < num_input; j++) {\n"
-			"      sum += A[idx * num_input + j] * B[j];\n"
-			"    }\n"
-			"	 z[idx] = sum;"
-			"  }\n"
-			"}\n\n"
-			)) {
+			"}\n\n") ||
+			P(file,
+				"/* _CUMAC1_ */\n"
+				"__global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_input) {\n"
+				"  int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (idx < num_output) {\n"
+				"    float sum = 0.0f;\n"
+				"    for (int j = 0; j < num_input; j++) {\n"
+				"      sum += A[idx * num_input + j] * B[j];\n"
+				"    }\n"
+				"	 z[idx] = sum;"
+				"  }\n"
+				"}\n\n")) {
 			G__DEBUG(0);
 			return -1;
 		}
