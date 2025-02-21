@@ -249,23 +249,24 @@ inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 			"	 cudaMalloc((void**) &deviceB, size_B);\n"
 			"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
 			"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
-			"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n"
-			"	 dim3 DimGrid((%lu+255)/256,1,1);\n"
-			"	 dim3 DimBlock(256, 1,1);\n"
-			"	 _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, %lu, %lu);\n"
-			"	 cudaDeviceSynchronize();\n"
-			"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n"
-			"	 cudaFree(deviceA);\n"
-			"	 cudaFree(deviceB);\n"
-			"	 cudaFree(deviceOutput);\n"
-			"  }\n\n",
+			"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n",
 			UL(inst->arg[3].i),
 			UL(inst->arg[4].i),
 			UL(inst->arg[4].i),
-			UL(inst->arg[3].i),
-			UL(inst->arg[3].i),
-			UL(inst->arg[3].i),
-			UL(inst->arg[4].i))) {
+			UL(inst->arg[3].i)) ||
+			P(file,
+				"	 dim3 DimGrid((%lu+255)/256,1,1);\n"
+				"	 dim3 DimBlock(256, 1,1);\n"
+				"	 _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, %lu, %lu);\n"
+				"	 cudaDeviceSynchronize();\n"
+				"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n"
+				"	 cudaFree(deviceA);\n"
+				"	 cudaFree(deviceB);\n"
+				"	 cudaFree(deviceOutput);\n"
+				"  }\n\n",
+				UL(inst->arg[3].i),
+				UL(inst->arg[3].i),
+				UL(inst->arg[4].i))) {
 			G__DEBUG(0);
 			return -1;
 		}
