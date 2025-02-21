@@ -246,14 +246,15 @@ inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 			"	 float *deviceB;\n"
 			"	 float *deviceOutput;\n"
 			"	 cudaMalloc((void**) &deviceA, size_A);\n"
-			"	 cudaMalloc((void**) &deviceB, size_B);\n"
-			"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
-			"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
-			"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n",
+			"	 cudaMalloc((void**) &deviceB, size_B);\n",
 			UL(inst->arg[3].i),
 			UL(inst->arg[4].i),
 			UL(inst->arg[4].i),
 			UL(inst->arg[3].i)) ||
+			P(file,
+				"	 cudaMalloc((void**) &deviceOutput, size_z);\n"
+				"	 cudaMemcpy(deviceA, hostA, size_A, cudaMemcpyHostToDevice);\n"
+				"	 cudaMemcpy(deviceB, hostB, size_B, cudaMemcpyHostToDevice);\n") ||
 			P(file,
 				"	 dim3 DimGrid((%lu+255)/256,1,1);\n"
 				"	 dim3 DimBlock(256, 1,1);\n"
