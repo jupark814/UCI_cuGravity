@@ -227,8 +227,8 @@ inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 		if (P(file,
 			"  { /* cuMAC1 */\n"
 			"    %s *z = (%s *)( m_ + %lu );\n"
-			"    const %s *A = (const %s *)( m_ + %lu );\n"
-			"    const %s *B = (const %s *)( m_ + %lu );\n",
+			"    const %s *hostA = (const %s *)( m_ + %lu );\n"
+			"    const %s *hostB = (const %s *)( m_ + %lu );\n",
 			precision(inst),
 			precision(inst),
 			UL(inst->arg[0].i),
