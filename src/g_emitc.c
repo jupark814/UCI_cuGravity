@@ -260,14 +260,15 @@ inst_mul1(const struct g__ann_program_inst *inst, FILE *file)
 				"	 dim3 DimBlock(256, 1,1);\n"
 				"	 _CUMAC1_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB, %lu, %lu);\n"
 				"	 cudaDeviceSynchronize();\n"
-				"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n"
-				"	 cudaFree(deviceA);\n"
-				"	 cudaFree(deviceB);\n"
-				"	 cudaFree(deviceOutput);\n"
-				"  }\n\n",
+				"	 cudaMemcpy(z, deviceOutput, size_z, cudaMemcpyDeviceToHost);\n",
 				UL(inst->arg[3].i),
 				UL(inst->arg[3].i),
-				UL(inst->arg[4].i))) {
+				UL(inst->arg[4].i)) ||
+				P(file,
+					"	 cudaFree(deviceA);\n"
+					"	 cudaFree(deviceB);\n"
+					"	 cudaFree(deviceOutput);\n"
+					"  }\n\n")) {
 			G__DEBUG(0);
 			return -1;
 		}
