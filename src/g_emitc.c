@@ -844,7 +844,7 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"    for (int j = 0; j < num_input; j++) {\n"
 				"      sum += A[idx * num_input + j] * B[j];\n"
 				"    }\n"
-				"	 z[idx] = sum;\n"
+				"    z[idx] = sum;\n"
 				"  }\n"
 				"}\n\n")) {
 			G__DEBUG(0);
