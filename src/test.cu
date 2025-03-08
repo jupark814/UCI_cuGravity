@@ -96,7 +96,7 @@ static float *_activate_(char *m_, const float *x_) {
     memcpy(m_ + 716880, x_, 784 * sizeof (float));
   }
 
-  { /* MAC1 */
+  { /* CUMAC1 */
     float *z = (float *)( m_ + 720016 );
     const float *hostA = (const float *)( m_ + 0 );
     const float *hostB = (const float *)( m_ + 716880 );
