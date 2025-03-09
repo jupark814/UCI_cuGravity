@@ -410,7 +410,7 @@ inst_add(const struct g__ann_program_inst *inst, FILE *file)
 	if (inst->cuda_inst) {
 		/*
 		if (P(file,
-			"  { /* CUADD \n"
+			"  {  CUADD \n"
 			"    %s *za = (%s *)( m_ + %lu );\n"
 			"    const %s *B = (const %s *)( m_ + %lu );\n"
 			"    int size_A = %lu * sizeof(%s);\n"
