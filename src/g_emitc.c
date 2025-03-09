@@ -446,27 +446,6 @@ inst_add(const struct g__ann_program_inst *inst, FILE *file)
 		  G__DEBUG(0);
 		  return -1;
 		}  
-		if (P(file,
-			"  { /* ADD */\n"
-			"    %s *za = (%s *)( m_ + %lu );\n"
-			"    const %s *B = (const %s *)( m_ + %lu );\n"
-			"    %s i;\n",
-			precision(inst),
-			precision(inst),
-			UL(inst->arg[0].i),
-			precision(inst),
-			precision(inst),
-			UL(inst->arg[1].i),
-			type(inst->arg[2].i)) ||
-		  P(file,
-			"    for (i=0; i<%lu; ++i) {\n"
-			"      za[i] += B[i];\n"
-			"    }\n"
-			"  }\n\n",
-			UL(inst->arg[2].i))) {
-		  G__DEBUG(0);
-		  return -1;
-	  	}
 	} else {
 		if (P(file,
 			"  { /* ADD */\n"
