@@ -35,7 +35,7 @@ __global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_i
 }
 
 /* _CUADD*/
-__global__ void _CUADD_(float *za, const float *B, int n) {
+__global__ void _CUADD_(float *za, float *B) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i < n) {
       za[i] += B[i];
@@ -134,23 +134,19 @@ static float *_activate_(char *m_, const float *x_) {
       const float *B = (const float *)( m_ + 313600 );
       int size_A = 100 * sizeof(float);
       int size_B = 100 * sizeof(float);
-      int size_z = 100 * sizeof(float);
       float *deviceA;
       float *deviceB;
-      float *deviceOutput;
       cudaMalloc((void**) &deviceA, size_A);
       cudaMalloc((void**) &deviceB, size_B);
-      cudaMalloc((void**) &deviceOutput, size_z);
       cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);
       cudaMemcpy(deviceB, B, size_B, cudaMemcpyHostToDevice);
       dim3 DimGrid((100+255)/256,1,1);
       dim3 DimBlock(256, 1,1);
-      _CUADD_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB);
+      _CUADD_<<<DimGrid, DimBlock>>>(deviceA, deviceB);
       cudaDeviceSynchronize();
-      cudaMemcpy(za, deviceOutput, size_z, cudaMemcpyDeviceToHost);
+      cudaMemcpy(za, deviceA, size_A, cudaMemcpyDeviceToHost);
       cudaFree(deviceA);
       cudaFree(deviceB);
-      cudaFree(deviceOutput);
   }
   //{ /* ADD */
   //  float *za = (float *)( m_ + 720016 );
