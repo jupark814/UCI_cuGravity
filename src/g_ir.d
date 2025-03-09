@@ -1,0 +1,11 @@
+-ansi
+-pedantic
+-Wshadow
+-Wall
+-Wextra
+-Werror
+-Wfatal-errors
+-fPIC
+-O3
+-MM
+g_ir.c

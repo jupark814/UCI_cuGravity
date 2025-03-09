@@ -34,6 +34,14 @@ __global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_i
   }
 }
 
+/* _CUADD*/
+__global__ void _CUADD_(float *za, const float *B, int n) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n) {
+      za[i] += B[i];
+  }
+}
+
 static void _initialize_(char *m_) {
   { /* RANDOM */
     float *z = (float *)( m_ + 0 );
@@ -103,8 +111,8 @@ static float *_activate_(char *m_, const float *x_) {
     int size_A = 100 * 784 * sizeof(float);
     int size_B = 784 * sizeof(float);
     int size_z = 100 * sizeof(float);
-    float *deviceB;
     float *deviceA;
+    float *deviceB;
     float *deviceOutput;
     cudaMalloc((void**) &deviceA, size_A);
     cudaMalloc((void**) &deviceB, size_B);
@@ -121,14 +129,37 @@ static float *_activate_(char *m_, const float *x_) {
     cudaFree(deviceOutput);
   }
 
-  { /* ADD */
-    float *za = (float *)( m_ + 720016 );
-    const float *B = (const float *)( m_ + 313600 );
-    uint32_t i;
-    for (i=0; i<100; ++i) {
-      za[i] += B[i];
-    }
+  { /* CUADD */
+      float *za = (float *) (m_ + 720016);
+      const float *B = (const float *)( m_ + 313600 );
+      int size_A = 100 * sizeof(float);
+      int size_B = 100 * sizeof(float);
+      int size_z = 100 * sizeof(float);
+      float *deviceA;
+      float *deviceB;
+      float *deviceOutput;
+      cudaMalloc((void**) &deviceA, size_A);
+      cudaMalloc((void**) &deviceB, size_B);
+      cudaMalloc((void**) &deviceOutput, size_z);
+      cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);
+      cudaMemcpy(deviceB, B, size_B, cudaMemcpyHostToDevice);
+      dim3 DimGrid((100+255)/256,1,1);
+      dim3 DimBlock(256, 1,1);
+      _CUADD_<<<DimGrid, DimBlock>>>(deviceOutput, deviceA, deviceB);
+      cudaDeviceSynchronize();
+      cudaMemcpy(za, deviceOutput, size_z, cudaMemcpyDeviceToHost);
+      cudaFree(deviceA);
+      cudaFree(deviceB);
+      cudaFree(deviceOutput);
   }
+  //{ /* ADD */
+  //  float *za = (float *)( m_ + 720016 );
+  //  const float *B = (const float *)( m_ + 313600 );
+  //  uint32_t i;
+  //  for (i=0; i<100; ++i) {
+  //    za[i] += B[i];
+  //  }
+  //}
 
   { /* RELU */
     float *za = (float *)( m_ + 720016 );
@@ -147,8 +178,8 @@ static float *_activate_(char *m_, const float *x_) {
     int size_A = 100 * 100 * sizeof(float);
     int size_B = 100 * sizeof(float);
     int size_z = 100 * sizeof(float);
-    float *deviceB;
     float *deviceA;
+    float *deviceB;
     float *deviceOutput;
     cudaMalloc((void**) &deviceA, size_A);
     cudaMalloc((void**) &deviceB, size_B);
@@ -191,8 +222,8 @@ static float *_activate_(char *m_, const float *x_) {
     int size_A = 10 * 100 * sizeof(float);
     int size_B = 100 * sizeof(float);
     int size_z = 10 * sizeof(float);
-    float *deviceB;
     float *deviceA;
+    float *deviceB;
     float *deviceOutput;
     cudaMalloc((void**) &deviceA, size_A);
     cudaMalloc((void**) &deviceB, size_B);
