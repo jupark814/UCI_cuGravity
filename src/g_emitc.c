@@ -887,6 +887,14 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"    }\n"
 				"    z[idx] = sum;\n"
 				"  }\n"
+				"}\n\n")
+			P(file,
+				"/* _ADD_ */\n"
+				"__global__ void _CUADD_(float *za, float *B, int n) {\n"
+				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (i < n) {\n"
+				"    za[i] += B[i];\n"
+				"  }\n"
 				"}\n\n")) {
 			G__DEBUG(0);
 			return -1;
