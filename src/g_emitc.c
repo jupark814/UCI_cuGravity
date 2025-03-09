@@ -887,7 +887,7 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"    }\n"
 				"    z[idx] = sum;\n"
 				"  }\n"
-				"}\n\n")
+				"}\n\n") ||
 			P(file,
 				"/* _ADD_ */\n"
 				"__global__ void _CUADD_(float *za, float *B, int n) {\n"
