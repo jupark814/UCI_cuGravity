@@ -35,7 +35,7 @@ __global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_i
 }
 
 /* _CUADD*/
-__global__ void _CUADD_(float *za, float *B) {
+__global__ void _CUADD_(float *za, float *B, int n) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i < n) {
       za[i] += B[i];
@@ -142,7 +142,7 @@ static float *_activate_(char *m_, const float *x_) {
       cudaMemcpy(deviceB, B, size_B, cudaMemcpyHostToDevice);
       dim3 DimGrid((100+255)/256,1,1);
       dim3 DimBlock(256, 1,1);
-      _CUADD_<<<DimGrid, DimBlock>>>(deviceA, deviceB);
+      _CUADD_<<<DimGrid, DimBlock>>>(deviceA, deviceB, 100);
       cudaDeviceSynchronize();
       cudaMemcpy(za, deviceA, size_A, cudaMemcpyDeviceToHost);
       cudaFree(deviceA);
