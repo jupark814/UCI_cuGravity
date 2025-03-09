@@ -889,15 +889,11 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"  }\n"
 				"}\n\n") ||
 			P(file,
-				"/* _CUMAC1_ */\n"
-				"__global__ void _CUMAC1_(float *z, float *A, float *B, int num_output, int num_input) {\n"
-				"  int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
-				"  if (idx < num_output) {\n"
-				"    float sum = 0.0f;\n"
-				"    for (int j = 0; j < num_input; j++) {\n"
-				"      sum += A[idx * num_input + j] * B[j];\n"
-				"    }\n"
-				"    z[idx] = sum;\n"
+				"/* _CUADD_ */\n"
+				"__global__ void _CUADD_(float *za, float *B, int n) {\n"
+				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (i < n) {\n"
+				"    za[i] += B[i];\n"
 				"  }\n"
 				"}\n\n")) {
 			G__DEBUG(0);
