@@ -4,6 +4,7 @@
 mnist/cu_mnist_manual
 mnist/mnist_manual
 mnist/mnist
+mnist/gpu_usage.log
 
 # src directory
 src/gravity
