@@ -1,0 +1,22 @@
+# Ignore all build artifacts and outputs
+
+# mnist directory
+mnist/cu_mnist_manual
+mnist/mnist_manual
+mnist/mnist
+
+# src directory
+src/gravity
+
+# general
+*.o
+*.d
+*.out
+*.err
+*.so
+*.a
+y.tab.*
+lex.yy.*
+*~
+*#
+

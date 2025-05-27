@@ -8,4 +8,4 @@
 .output 10 softmax     ;
 .hidden 100 relu       ;
 .hidden 100 relu       ;
-.cuda 0                ;
+.cuda 1                ;

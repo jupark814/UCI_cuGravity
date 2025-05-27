@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name="mnist_manual"
+#SBATCH --job-name="cu_mnist_manual"
 #SBATCH -A givargis_lab_gpu
 
 #SBATCH --partition=gpu
@@ -25,8 +25,8 @@ module load cuda/11.7.1
 module load gcc/8.4.0
 
 echo -e "=== Running mnist_manual ==="
-make
-./mnist_manual
+make clean && make
+./cu_mnist_manual
 
 echo ""
 echo "=== GPU Information ==="
@@ -85,3 +85,4 @@ echo "=== Job Completed ==="
 #./mnist
 #
 #echo "=== Job Completed ==="
+
