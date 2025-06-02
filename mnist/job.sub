@@ -22,7 +22,6 @@ module load cuda/11.7.1 || { echo "CUDA module failed to load"; exit 1; }
 module load gcc/8.4.0 || { echo "GCC module failed to load"; exit 1; }
 
 echo -e "=== Running mnist_manual ==="
-<<<<<<< HEAD
 
 make clean && make  || { echo "Make failed, exiting."; exit 1; }
 
