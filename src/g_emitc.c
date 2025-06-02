@@ -502,24 +502,53 @@ inst_suby(const struct g__ann_program_inst *inst, FILE *file)
 static int
 inst_relu(const struct g__ann_program_inst *inst, FILE *file)
 {
-	if (P(file,
-	      "  { /* RELU */\n"
-	      "    %s *za = (%s *)( m_ + %lu );\n"
-	      "    %s i;\n",
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[0].i),
-	      type(inst->arg[1].i)) ||
-	    P(file,
-	      "    for (i=0; i<%lu; ++i) {\n"
-	      "      if (0.0 >= za[i]) {\n"
-	      "        za[i] = 0.0;\n"
-	      "      }\n"
-	      "    }\n"
-	      "  }\n\n",
-	      UL(inst->arg[1].i))) {
-		G__DEBUG(0);
-		return -1;
+	if (inst->cuda_inst) {
+		if (P(file,
+			"  { /* CURELU */\n"
+			"    %s *za = (%s *)( m_ + %lu );\n"
+			"    int size_A = %lu * sizeof(%s);\n"
+			"    %s *deviceA;\n"
+			"    cudaMalloc((void**) &deviceA, size_A);\n"
+			"    cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			UL(inst->arg[1].i),
+			precision(inst),
+			precision(inst)) ||
+		  P(file,
+			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
+			"    dim3 DimBlock(256,1,1);\n"
+			"    _CURELU_<<<DimGrid, DimBlock>>>(deviceA, %lu);\n"
+			"    cudaDeviceSynchronize();\n"
+			"    cudaMemcpy(za, deviceA, size_A, cudaMemcpyDeviceToHost);\n"
+			"    cudaFree(deviceA);\n"
+			"  }\n\n",
+			UL(inst->arg[1].i), 
+			UL(inst->arg[1].i))) {
+		  G__DEBUG(0);
+		  return -1;
+		}  
+	} else {
+		if (P(file,
+			"  { /* RELU */\n"
+			"    %s *za = (%s *)( m_ + %lu );\n"
+			"    %s i;\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			type(inst->arg[1].i)) ||
+			P(file,
+			"    for (i=0; i<%lu; ++i) {\n"
+			"      if (0.0 >= za[i]) {\n"
+			"        za[i] = 0.0;\n"
+			"      }\n"
+			"    }\n"
+			"  }\n\n",
+			UL(inst->arg[1].i))) {
+			G__DEBUG(0);
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -894,6 +923,16 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
 				"  if (i < n) {\n"
 				"    za[i] += B[i];\n"
+				"  }\n"
+				"}\n\n") ||
+			P(file,
+				"/* _CURELU_ */\n"
+				"__global__ void _CURELU_(float *za, int n) {\n"
+				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (i < n) {\n"
+				"    if (za[i] <= 0.0f) {\n"
+				"      za[i] = 0.0f;\n"
+				"    }\n"
 				"  }\n"
 				"}\n\n")) {
 			G__DEBUG(0);
