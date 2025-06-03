@@ -642,28 +642,69 @@ inst_sigmoid(const struct g__ann_program_inst *inst, FILE *file)
 static int
 inst_relud(const struct g__ann_program_inst *inst, FILE *file)
 {
-	if (P(file,
-	      "  { /* RELUD */\n"
-	      "    %s *za = (%s *)( m_ + %lu );\n"
-	      "    const %s *B = (const %s *)( m_ + %lu );\n"
-	      "    %s i;\n",
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[0].i),
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[1].i),
-	      type(inst->arg[2].i)) ||
-	    P(file,
-	      "    for (i=0; i<%lu; ++i) {\n"
-	      "      if (0.0 >= B[i]) {\n"
-	      "        za[i] = 0.0;\n"
-	      "      }\n"
-	      "    }\n"
-	      "  }\n\n",
-	      UL(inst->arg[2].i))) {
-		G__DEBUG(0);
-		return -1;
+	if (inst->cuda_inst) {
+		if (P(file,
+			"  { /* CURELUD */\n"
+			"    %s *za = (%s *)( m_ + %lu );\n"
+			"	 const %s *B = (const %s *)(m_ + %lu );\n"
+			"    uint32_t size_A = %lu * sizeof(%s);\n"
+			"    uint32_t size_B = %lu * sizeof(%s);\n"
+			"    %s *deviceA;\n"
+			"    %s *deviceB;\n"
+			"    cudaMalloc((void**) &deviceA, size_A);\n"
+			"    cudaMalloc((void**) &deviceB, size_B);\n"
+			"    cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);\n",
+			"    cudaMemcpy(deviceB, B, size_B, cudaMemcpyHostToDevice);\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			UL(inst->arg[2].i),
+			precision(inst),
+			UL(inst->arg[2].i),
+			precision(inst),
+			precision(inst),
+			precision(inst)) ||
+		  P(file,
+			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
+			"    dim3 DimBlock(256,1,1);\n"
+			"    _CURELUD_<<<DimGrid, DimBlock>>>(deviceA, deviceB, %lu);\n"
+			"    cudaDeviceSynchronize();\n"
+			"    cudaMemcpy(za, deviceA, size_A, cudaMemcpyDeviceToHost);\n"
+			"    cudaFree(deviceA);\n"
+			"	 cudaFree(deviceB);\n"
+			"  }\n\n",
+			UL(inst->arg[2].i), 
+			UL(inst->arg[2].i))) {
+		  G__DEBUG(0);
+		  return -1;
+		}  
+	} else {
+		if (P(file,
+			"  { /* RELUD */\n"
+			"    %s *za = (%s *)( m_ + %lu );\n"
+			"    const %s *B = (const %s *)( m_ + %lu );\n"
+			"    %s i;\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			type(inst->arg[2].i)) ||
+			P(file,
+			"    for (i=0; i<%lu; ++i) {\n"
+			"      if (0.0 >= B[i]) {\n"
+			"        za[i] = 0.0;\n"
+			"      }\n"
+			"    }\n"
+			"  }\n\n",
+			UL(inst->arg[2].i))) {
+			G__DEBUG(0);
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -931,6 +972,16 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
 				"  if (i < n) {\n"
 				"    if (za[i] <= 0.0f) {\n"
+				"      za[i] = 0.0f;\n"
+				"    }\n"
+				"  }\n"
+				"}\n\n") ||
+			P(file,
+				"/* _CURELUD_ */\n"
+				"__global__ void _CURELUD_(float *za, float *B, int n) {\n"
+				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (i < n) {\n"
+				"    if (0.0f >= B[i]) {\n"
 				"      za[i] = 0.0f;\n"
 				"    }\n"
 				"  }\n"
