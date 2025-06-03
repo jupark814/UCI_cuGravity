@@ -653,7 +653,7 @@ inst_relud(const struct g__ann_program_inst *inst, FILE *file)
 			"    %s *deviceB;\n"
 			"    cudaMalloc((void**) &deviceA, size_A);\n"
 			"    cudaMalloc((void**) &deviceB, size_B);\n"
-			"    cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);\n",
+			"    cudaMemcpy(deviceA, za, size_A, cudaMemcpyHostToDevice);\n"
 			"    cudaMemcpy(deviceB, B, size_B, cudaMemcpyHostToDevice);\n",
 			precision(inst),
 			precision(inst),
@@ -680,7 +680,7 @@ inst_relud(const struct g__ann_program_inst *inst, FILE *file)
 			UL(inst->arg[2].i))) {
 		  G__DEBUG(0);
 		  return -1;
-		}  
+		}
 	} else {
 		if (P(file,
 			"  { /* RELUD */\n"
