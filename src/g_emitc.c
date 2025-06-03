@@ -503,7 +503,7 @@ inst_suby(const struct g__ann_program_inst *inst, FILE *file)
 		  P(file,
 			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
 			"    dim3 DimBlock(256,1,1);\n"
-			"    _CUADD_<<<DimGrid, DimBlock>>>(devicez, deviceA, devicey_, %lu);\n"
+			"    _CUSUBY_<<<DimGrid, DimBlock>>>(devicez, deviceA, devicey_, %lu);\n"
 			"    cudaDeviceSynchronize();\n"
 			"    cudaMemcpy(z, devicez, size, cudaMemcpyDeviceToHost);\n"
 			"    cudaFree(deviceA);\n"
