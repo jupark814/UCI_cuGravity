@@ -646,7 +646,7 @@ inst_relud(const struct g__ann_program_inst *inst, FILE *file)
 		if (P(file,
 			"  { /* CURELUD */\n"
 			"    %s *za = (%s *)( m_ + %lu );\n"
-			"	 const %s *B = (const %s *)(m_ + %lu );\n"
+			"    const %s *B = (const %s *)(m_ + %lu );\n"
 			"    uint32_t size_A = %lu * sizeof(%s);\n"
 			"    uint32_t size_B = %lu * sizeof(%s);\n"
 			"    %s *deviceA;\n"
@@ -674,7 +674,7 @@ inst_relud(const struct g__ann_program_inst *inst, FILE *file)
 			"    cudaDeviceSynchronize();\n"
 			"    cudaMemcpy(za, deviceA, size_A, cudaMemcpyDeviceToHost);\n"
 			"    cudaFree(deviceA);\n"
-			"	 cudaFree(deviceB);\n"
+			"    cudaFree(deviceB);\n"
 			"  }\n\n",
 			UL(inst->arg[2].i), 
 			UL(inst->arg[2].i))) {
