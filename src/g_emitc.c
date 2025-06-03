@@ -475,26 +475,68 @@ inst_add(const struct g__ann_program_inst *inst, FILE *file)
 static int
 inst_suby(const struct g__ann_program_inst *inst, FILE *file)
 {
-	if (P(file,
-	      "  { /* SUBY */\n"
-	      "    %s *z = (%s *)( m_ + %lu );\n"
-	      "    const %s *A = (const %s *)( m_ + %lu );\n"
-	      "    %s i;\n",
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[0].i),
-	      precision(inst),
-	      precision(inst),
-	      UL(inst->arg[1].i),
-	      type(inst->arg[2].i)) ||
-	    P(file,
-	      "    for (i=0; i<%lu; ++i) {\n"
-	      "      z[i] = A[i] - y_[i];\n"
-	      "    }\n"
-	      "  }\n\n",
-	      UL(inst->arg[2].i))) {
-		G__DEBUG(0);
-		return -1;
+	if (inst->cuda_inst) {
+		if (P(file,
+			"  { /* CUSUBY */\n"
+			"    %s *z = (%s *)( m_ + %lu );\n"
+			"    const %s *A = (const %s *)( m_ + %lu );\n"
+			"    int size = %lu * sizeof(%s);\n"
+			"    %s *deviceA;\n"
+			"    %s *devicey_;\n"
+			"    %s *devicez;\n"
+			"    cudaMalloc((void**) &deviceA, size);\n"
+			"    cudaMalloc((void**) &devicey_, size);\n"
+			"    cudaMalloc((void**) &devicez, size);\n"
+			"    cudaMemcpy(deviceA, A, size, cudaMemcpyHostToDevice);\n"
+			"    cudaMemcpy(devicey_, y_, size, cudaMemcpyHostToDevice);\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			UL(inst->arg[2].i),
+			precision(inst),
+			precision(inst),
+			precision(inst),
+			precision(inst)) ||
+		  P(file,
+			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
+			"    dim3 DimBlock(256,1,1);\n"
+			"    _CUADD_<<<DimGrid, DimBlock>>>(devicez, deviceA, devicey_, %lu);\n"
+			"    cudaDeviceSynchronize();\n"
+			"    cudaMemcpy(z, devicez, size, cudaMemcpyDeviceToHost);\n"
+			"    cudaFree(deviceA);\n"
+			"    cudaFree(devicey_);\n"
+			"    cudaFree(devicez);\n"
+			"  }\n\n",
+			UL(inst->arg[2].i), 
+			UL(inst->arg[2].i))) {
+		  G__DEBUG(0);
+		  return -1;
+		}  
+	} else {
+		if (P(file,
+			"  { /* SUBY */\n"
+			"    %s *z = (%s *)( m_ + %lu );\n"
+			"    const %s *A = (const %s *)( m_ + %lu );\n"
+			"    %s i;\n",
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[0].i),
+			precision(inst),
+			precision(inst),
+			UL(inst->arg[1].i),
+			type(inst->arg[2].i)) ||
+			P(file,
+			"    for (i=0; i<%lu; ++i) {\n"
+			"      z[i] = A[i] - y_[i];\n"
+			"    }\n"
+			"  }\n\n",
+			UL(inst->arg[2].i))) {
+			G__DEBUG(0);
+			return -1;
+		}
 	}
 	return 0;
 }
@@ -984,6 +1026,14 @@ cudaFunction(const struct g__ann *ann, FILE *file)
 				"    if (0.0f >= B[i]) {\n"
 				"      za[i] = 0.0f;\n"
 				"    }\n"
+				"  }\n"
+				"}\n\n") ||
+			P(file,
+				"/* _CUSUBY_ */\n"
+				"__global__ void _CUSUBY_(float *za, float *A, float *Y, int n) {\n"
+				"  int i = blockIdx.x * blockDim.x + threadIdx.x;\n"
+				"  if (i < n) {\n"
+				"    za[i] = A[i] - Y[i];\n"
 				"  }\n"
 				"}\n\n")) {
 			G__DEBUG(0);
