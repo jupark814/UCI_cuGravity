@@ -403,8 +403,8 @@ inst_mul4(const struct g__ann_program_inst *inst, FILE *file)
 			precision(inst)) ||
 			P(file,
 			"    dim3 DimGrid((%lu+255)/256,1,1);\n"
-			"    dim3 DimBlock(256, 1,1);\n"
-			"    _CUMAC4_<<<DimGrid, DimBlock>>>(device_za, device_B, %lu, %lu);\n"
+			"    dim3 DimBlock(256,1,1);\n"
+			"    _CUMAC4_<<<DimGrid, DimBlock>>>(device_za, device_B, %lu, %f);\n"
 			"    cudaDeviceSynchronize();\n"
 			"    cudaMemcpy(za, device_za, size, cudaMemcpyDeviceToHost);\n"
 			"    cudaFree(device_za);\n"
